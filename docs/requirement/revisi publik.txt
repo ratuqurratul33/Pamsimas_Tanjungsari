@@ -1,0 +1,36 @@
+revisi fitur di publik||
+umum =spacing judul banyak yg motong karna max wiidh atau length cari tau
+
+1. landing pages 
+- 3 card = ganti Persentase Tunggakan menjadi data . peta air pisahkan section judul jalur peta air
+* aliep
+
+3. panduan
+- jangan ada fitur  unduh pdf
+
+4. transparansais
+- pemasukan ganti jadi partisipasti pembayaran tiap dusun
+- pengeluaran tabel ganti jadi card yang bisa di scroll ke samping 
+
+5. profile
+- isi konten diperbaiki aliep
+- petugas diperbaiki aliep 
+
+6. faq 
+- konten diperbaiki aliep 
+
+
+aliep to do
+- tanya sejarah/ deskrip layanan pam 
+- tanya dan tahu nomor wa petugas
+- tanya jam operasional 
+- tanya waktu penagihan tiap bulannya 
+- tanya alamat ketua/petugas yang akan jadi admin dengan warga ( untuk dihubungi jika ada pemasangan, dan permasalahan)
+- tanya data2 opetugas penagih dan wilayah tugasnya masing2 dan profile petugas 
+
+yang sudah ada 
+- nama data pelanggan, alamat, rt rw
+
+
+- 
+

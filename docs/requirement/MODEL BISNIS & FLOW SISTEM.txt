@@ -1,0 +1,1018 @@
+# MODEL BISNIS & FLOW SISTEM PAMSIMAS — FINAL
+
+Dokumen ini merupakan rancangan terbaru sistem **Digitalisasi PAMSIMAS** berdasarkan seluruh hasil observasi, wawancara, dan revisi alur bisnis.
+
+Sistem terdiri dari **3 sisi utama**:
+
+1. **Publik** — melihat informasi dan transparansi PAMSIMAS.
+2. **Petugas Penagih** — melakukan pekerjaan lapangan.
+3. **Admin** — mengelola seluruh proses PAMSIMAS.
+
+> **Catatan:** Tidak ada lagi pembagian hak akses Admin Ketua, Bendahara, atau Perangkat Desa. **Satu role Admin memiliki seluruh fitur pengelolaan sistem.**
+
+---
+
+# 1. STRUKTUR ROLE
+
+```text
+                    SISTEM PAMSIMAS
+                          │
+          ┌───────────────┼───────────────┐
+          │               │               │
+       PUBLIK          PETUGAS          ADMIN
+      tanpa login        login            login
+          │               │               │
+       Informasi       Penagihan       Kelola seluruh
+       Transparansi    Lapangan         sistem
+       Profil
+```
+
+---
+
+# 2. ROLE PUBLIK
+
+Publik merupakan masyarakat yang mengakses website tanpa login.
+
+Fokus publik hanya pada:
+
+* Informasi PAMSIMAS
+* Transparansi pembayaran berdasarkan wilayah
+* Informasi pengeluaran yang dipublikasikan
+* Profil PAMSIMAS
+
+## Menu Publik
+
+```text
+Beranda
+Transparansi Pembayaran
+Pengeluaran
+Profil
+```
+
+Tidak ada dashboard admin, data pelanggan, data petugas, kas internal, atau laporan internal.
+
+---
+
+# 3. ROLE PETUGAS PENAGIH
+
+Petugas merupakan pengguna lapangan.
+
+Petugas hanya bertugas melakukan:
+
+* Pencatatan meter
+* Penagihan
+* Pencatatan pembayaran
+* Pengunggahan bukti pembayaran
+* Pelaporan transaksi kepada Admin
+
+Petugas **tidak dapat**:
+
+* Mengelola pelanggan
+* Mengelola petugas
+* Mengelola kas
+* Memverifikasi transaksi
+* Mengelola pengeluaran
+* Mengubah tarif
+
+## Menu Petugas
+
+```text
+Dashboard
+Data Pelanggan
+Input Meter
+Riwayat Transaksi
+Profil
+Logout
+```
+
+---
+
+# 4. ROLE ADMIN
+
+Admin memiliki akses penuh terhadap seluruh sistem.
+
+## Sidebar Admin
+
+```text
+Dashboard
+
+Data Pelanggan
+Data Petugas
+
+Cetak Kwitansi
+Verifikasi Transaksi
+
+Akun Kas
+Pengeluaran
+Transparansi Wilayah/Pembayaran
+Laporan Bulanan
+
+----------------------------
+
+Pengaturan Sistem
+
+Profil
+Logout
+```
+
+---
+
+# 5. FLOW UTAMA SISTEM
+
+Secara keseluruhan, sistem bekerja seperti berikut:
+
+```text
+DATA PELANGGAN
+      ↓
+PENCATATAN METER
+      ↓
+TAGIHAN
+      ↓
+CETAK KWITANSI
+      ↓
+PENAGIHAN
+      ↓
+PEMBAYARAN
+ ┌────┴────┐
+ ↓         ↓
+TUNAI     QRIS
+ └────┬────┘
+      ↓
+PETUGAS INPUT TRANSAKSI
+      ↓
+UPLOAD BUKTI
+      ↓
+SETORAN PETUGAS
+      ↓
+VERIFIKASI ADMIN
+      ↓
+ ┌────┼──────────────┐
+ ↓    ↓              ↓
+LUNAS KAS         TRANSPARANSI
+     ↓                ↓
+KAS TUNAI/QRIS    WILAYAH
+     ↓
+PENGELUARAN
+     ↓
+LAPORAN BULANAN
+```
+
+---
+
+# 6. FLOW DATA PELANGGAN
+
+Karena PAMSIMAS sudah berjalan bertahun-tahun, data pelanggan kemungkinan sudah tersedia dalam bentuk manual.
+
+Admin melakukan digitalisasi data tersebut.
+
+## Admin → Data Pelanggan
+
+Admin dapat:
+
+* Tambah pelanggan
+* Edit pelanggan
+* Nonaktifkan pelanggan
+* Hapus data tertentu
+* Cari pelanggan
+* Lihat detail pelanggan
+
+Data utama:
+
+```text
+ID Pelanggan
+Nama
+Alamat
+RT
+Dusun
+Status
+```
+
+---
+
+# 7. DETAIL DATA PELANGGAN
+
+Detail dibuat sederhana.
+
+### Informasi utama
+
+```text
+ID Pelanggan
+Nama
+Alamat
+RT
+Dusun
+Status
+```
+
+### Riwayat Tagihan
+
+| Bulan   | Meter Lalu | Meter Ini | Pemakaian | Nominal | Status      |
+| ------- | ---------: | --------: | --------: | ------: | ----------- |
+| Agustus |        100 |       112 |     12 m³ |   Rp... | Lunas       |
+| Juli    |         88 |       100 |     12 m³ |   Rp... | Lunas       |
+| Juni    |         76 |        88 |     12 m³ |   Rp... | Belum Lunas |
+
+Dengan begitu Admin dapat mengetahui histori pelanggan tanpa detail yang terlalu kompleks.
+
+---
+
+# 8. FLOW DATA PETUGAS
+
+Admin dapat membuat lebih dari satu akun petugas.
+
+## Admin → Data Petugas
+
+Admin dapat:
+
+* Tambah petugas
+* Edit petugas
+* Mengatur wilayah penagihan
+* Reset password
+* Mengaktifkan/nonaktifkan akun
+
+Data:
+
+```text
+Foto
+Nama
+Username
+Nomor HP
+Wilayah Penagihan
+Status Akun
+```
+
+---
+
+# 9. FLOW INPUT METER
+
+Pada periode pencatatan, petugas mendatangi rumah pelanggan.
+
+Misalnya:
+
+> **Tanggal 10**
+
+Petugas:
+
+1. Mencari pelanggan.
+2. Membuka data pelanggan.
+3. Melihat meter sebelumnya.
+4. Memasukkan meter saat ini.
+5. Sistem menghitung pemakaian.
+
+Formula:
+
+```text
+Meter Saat Ini - Meter Sebelumnya
+= Pemakaian Air
+```
+
+Contoh:
+
+```text
+Meter sebelumnya = 100 m³
+Meter sekarang   = 112 m³
+
+Pemakaian = 12 m³
+```
+
+Sistem kemudian menghitung tagihan berdasarkan tarif yang telah ditentukan Admin.
+
+---
+
+# 10. FLOW CETAK KWITANSI
+
+Fitur ini penting karena proses PAMSIMAS **tetap menggunakan kwitansi fisik yang sudah digunakan sebelumnya**.
+
+Sistem bukan mengganti kwitansi lama, tetapi membantu Admin mencetaknya secara lebih cepat.
+
+## Alur
+
+```text
+Petugas mencatat meter
+        ↓
+Data pemakaian masuk sistem
+        ↓
+Tagihan terbentuk
+        ↓
+Admin membuka Cetak Kwitansi
+        ↓
+Pilih periode
+        ↓
+Pilih wilayah / petugas
+        ↓
+Sistem menampilkan daftar tagihan
+        ↓
+Admin memilih tagihan
+        ↓
+Cetak Kwitansi
+        ↓
+Kwitansi diberikan kepada Petugas
+```
+
+## Cetak Kwitansi Massal
+
+Admin dapat memilih:
+
+* Bulan/periode
+* Dusun
+* RT
+* Petugas
+* Status tagihan
+
+Kemudian sistem menghasilkan kumpulan kwitansi.
+
+### Isi kwitansi
+
+* Nomor tagihan
+* ID pelanggan
+* Nama pelanggan
+* Alamat/RT
+* Pemakaian air
+* biaya admin 5.000
+* Nominal tagihan
+* Informasi pembayaran
+* Elemen desain kwitansi resmi
+
+Sistem menggunakan **template kwitansi yang sudah dimiliki PAMSIMAS**.
+
+Data digital ditempatkan pada posisi yang sesuai dengan template tersebut.
+
+---
+
+# 11. FLOW PENAGIHAN
+
+Setelah kwitansi dicetak:
+
+```text
+Admin mencetak kwitansi
+        ↓
+Kwitansi diberikan ke Petugas
+        ↓
+Petugas mendatangi pelanggan
+        ↓
+Pelanggan membayar
+        ↓
+┌─────────────┐
+│             │
+Tunai       QRIS
+│             │
+└──────┬──────┘
+       ↓
+Kwitansi dicap/diberikan
+       ↓
+Petugas mencatat pembayaran
+       ↓
+Upload bukti pembayaran
+       ↓
+Menunggu Verifikasi
+```
+
+Periode pembayaran misalnya:
+
+> **Tanggal 11–15**
+
+---
+
+# 12. FLOW PEMBAYARAN PETUGAS
+
+Petugas membuka transaksi pelanggan.
+
+Kemudian:
+
+### 1. Pilih pelanggan
+
+### 2. Sistem menampilkan tagihan
+
+### 3. Petugas memilih metode
+
+```text
+○ Tunai
+○ QRIS
+```
+
+### 4. Pilih akun tujuan
+
+```text
+Kas Tunai
+Kas QRIS
+```
+
+Pilihan metode dan akun harus konsisten.
+
+Contoh:
+
+> Tunai → Kas Tunai
+
+> QRIS → Kas QRIS
+
+### 5. Upload bukti
+
+Petugas mengunggah bukti pembayaran.
+
+### 6. Submit
+
+Status:
+
+> **Menunggu Verifikasi**
+
+
+---
+# 13. VERIFIKASI TRANSAKSI
+
+Modul ini merupakan titik kontrol utama Admin.
+
+Admin menerima setoran dari petugas.
+
+## Tampilan utama
+
+Sebaiknya transaksi **dikelompokkan berdasarkan petugas**.
+
+Contoh:
+
+```text
+PETUGAS: Ahmad
+Periode: September 2026
+
+Jumlah Pelanggan Ditagih : 35
+Total Tunai              : Rp700.000
+Total QRIS               : Rp500.000
+Total Setoran            : Rp1.200.000
+Status                   : Menunggu Verifikasi
+```
+
+---
+
+# 14. DETAIL SETORAN PETUGAS
+
+Ketika Admin membuka detail, sistem menampilkan:
+
+### Informasi setoran
+
+* Nama petugas
+* Periode
+* Tanggal setoran
+* Total tunai
+* Total QRIS
+* Total keseluruhan
+* Bukti setoran
+
+### Daftar pelanggan yang ditagih
+
+| ID      | Nama  |  Tagihan | Metode | Bukti | Status  |
+| ------- | ----- | -------: | ------ | ----- | ------- |
+| PEL-001 | Ahmad | Rp20.000 | Tunai  | ✓     | Pending |
+| PEL-002 | Budi  | Rp25.000 | QRIS   | ✓     | Pending |
+| PEL-003 | Citra | Rp20.000 | Tunai  | ✓     | Pending |
+
+---
+
+# 15. AKSI VERIFIKASI
+
+Admin dapat melakukan verifikasi per transaksi.
+
+Namun untuk mempermudah pekerjaan, tersedia:
+
+> **Lunaskan Semua**
+
+Jika seluruh bukti dan uang telah sesuai.
+
+Flow:
+
+```text
+Admin membuka setoran
+        ↓
+Memeriksa total
+        ↓
+Memeriksa bukti
+        ↓
+Memeriksa daftar pelanggan
+        ↓
+        ┌───────────────┐
+        │               │
+   Sesuai            Tidak Sesuai
+        │               │
+        ↓               ↓
+Lunaskan Semua       Tolak
+        │
+        ↓
+Status pelanggan → Lunas
+        ↓
+Setoran → Terverifikasi
+        ↓
+Dana masuk ke Kas
+```
+
+Jika tidak sesuai, Admin dapat menolak transaksi tertentu dan memberikan alasan.
+
+---
+
+# 16. HUBUNGAN VERIFIKASI DENGAN KAS
+
+Setelah Admin menyetujui transaksi:
+
+### Tunai
+
+```text
+Pembayaran Tunai
+      ↓
+Verifikasi
+      ↓
+Kas Tunai + Rp...
+```
+
+### QRIS
+
+```text
+Pembayaran QRIS
+      ↓
+Verifikasi
+      ↓
+Kas QRIS + Rp...
+```
+
+Jadi transaksi **baru menjadi pemasukan kas resmi setelah diverifikasi**.
+
+---
+
+# 17. AKUN KAS
+
+Sistem hanya memiliki dua akun kas utama:
+
+```text
+Kas Tunai
+Kas QRIS
+```
+
+Masing-masing memiliki:
+
+* Saldo awal
+* Pemasukan
+* Pengeluaran
+* Saldo saat ini
+* Riwayat transaksi
+* Pemindahan dana
+
+---
+
+# 18. RIWAYAT AKUN KAS
+
+Contoh:
+
+| Tanggal | Jenis       | Referensi      |     Masuk |    Keluar |
+| ------- | ----------- | -------------- | --------: | --------: |
+| 15 Sep  | Pemasukan   | Setoran Ahmad  | Rp500.000 |         - |
+| 17 Sep  | Pengeluaran | Pembelian Pipa |         - | Rp200.000 |
+| 20 Sep  | Pemindahan  | Ke Kas QRIS    |         - | Rp300.000 |
+
+---
+
+# 19. PEMINDAHAN DANA
+
+Karena terdapat Kas Tunai dan Kas QRIS, Admin dapat memindahkan dana.
+
+Contoh:
+
+```text
+Kas Tunai
+Rp1.000.000
+       ↓
+Pindahkan Rp500.000
+       ↓
+Kas QRIS
+```
+
+Sistem mencatat:
+
+```text
+Kas Tunai
+Keluar Rp500.000
+
+Kas QRIS
+Masuk Rp500.000
+```
+
+Tetapi transaksi tersebut **bukan pemasukan baru**.
+
+---
+
+# 20. FLOW PENGELUARAN
+
+Admin mencatat pengeluaran berdasarkan sumber kas.
+
+## Form
+
+```text
+Tanggal
+Sumber Dana
+Kategori
+Nominal
+Keterangan
+Upload Bukti Nota
+Tampilkan ke Publik
+```
+
+### Sumber dana
+
+```text
+Kas Tunai
+Kas QRIS
+```
+
+Setelah disimpan:
+
+```text
+Input Pengeluaran
+       ↓
+Validasi
+       ↓
+Kas yang dipilih berkurang
+       ↓
+Riwayat Akun Kas bertambah
+       ↓
+Laporan Bulanan diperbarui
+```
+
+Jika:
+
+> **Tampilkan ke Publik = Ya**
+
+maka data yang telah dipilih tersebut dapat muncul pada halaman Pengeluaran publik.
+
+---
+
+# 21. TRANSPARANSI WILAYAH / PEMBAYARAN
+
+Modul ini berfungsi untuk mengetahui:
+
+> **Wilayah mana yang memiliki tingkat pembayaran tinggi dan wilayah mana yang perlu ditindaklanjuti.**
+
+Gunakan filter:
+
+```text
+Bulan
+Tahun
+```
+
+---
+
+# 22. LEVEL 1 — TOTAL WILAYAH
+
+Misalnya Admin memilih:
+
+> September 2026
+
+Sistem menampilkan:
+
+```text
+Dusun 3
+
+Total pelanggan = 100
+Sudah bayar      = 82
+Belum bayar      = 18
+```
+
+Sistem menghitung:
+
+```text
+82 / 100 × 100 = 82%
+```
+
+Maka:
+
+> **Dusun 3 → 82% pembayaran**
+
+Visualisasi:
+
+```text
+Dusun 3
+████████████████░░░░ 82%
+```
+
+---
+
+# 23. LEVEL 2 — DRILL-DOWN RT
+
+Admin klik:
+
+> **Dusun 3**
+
+Sistem masuk ke detail wilayah.
+
+```text
+RT 01 → 90%
+RT 02 → 75%
+RT 03 → 81%
+RT 04 → 82%
+```
+
+Dengan demikian Admin langsung mengetahui RT mana yang tingkat pembayarannya rendah.
+
+---
+
+# 24. LEVEL 3 — DETAIL PELANGGAN
+
+Admin klik:
+
+> **RT 02 → 75%**
+
+Sistem menampilkan:
+
+### Sudah Bayar
+
+```text
+PEL-001
+PEL-004
+PEL-008
+PEL-011
+```
+
+### Belum Bayar
+
+```text
+PEL-002
+PEL-006
+PEL-009
+PEL-013
+```
+
+Admin dapat menggunakan informasi tersebut untuk memberikan arahan kepada petugas.
+
+---
+
+# 25. TUJUAN MODUL TRANSPARANSI WILAYAH
+
+Modul ini bukan hanya untuk laporan.
+
+Fungsinya sebagai **alat pengambilan keputusan penagihan**.
+
+Contoh:
+
+```text
+Dusun 1 → 94%
+Dusun 2 → 91%
+Dusun 3 → 72%
+```
+
+Admin dapat memprioritaskan:
+
+> **Dusun 3**
+
+Kemudian:
+
+```text
+Dusun 3
+↓
+RT 02 = 65%
+↓
+Daftar pelanggan belum bayar
+↓
+Petugas melakukan penagihan lanjutan
+```
+
+---
+
+# 26. HUBUNGAN TRANSPARANSI DENGAN VERIFIKASI
+
+Penting untuk membedakan:
+
+### Pembayaran pelanggan
+
+Menunjukkan apakah pelanggan sudah melakukan pembayaran.
+
+### Verifikasi transaksi
+
+Menentukan apakah transaksi tersebut sudah disahkan oleh Admin.
+
+### Akun Kas
+
+Mencatat uang yang sudah resmi diterima/diakui dalam sistem.
+
+Sehingga:
+
+```text
+Pelanggan Bayar
+      ↓
+Petugas Input
+      ↓
+Pending
+      ↓
+Admin Verifikasi
+      ↓
+Lunas
+      ↓
+Kas Bertambah
+```
+
+---
+
+# 27. FLOW LAPORAN BULANAN
+
+Admin memilih:
+
+```text
+Bulan
+Tahun
+```
+
+Misalnya:
+
+> September 2026
+
+Sistem mengambil data:
+
+### Pemasukan
+
+Dari **transaksi yang sudah diverifikasi**.
+
+### Pengeluaran
+
+Dari modul Pengeluaran.
+
+### Mutasi
+
+Dari perpindahan Kas Tunai ↔ Kas QRIS.
+
+Mutasi tidak dihitung sebagai pemasukan baru.
+
+---
+
+# 28. HASIL LAPORAN
+
+```text
+LAPORAN PAMSIMAS
+September 2026
+
+Saldo Awal
+Rp............
+
+Pemasukan Terverifikasi
+Rp............
+
+Pengeluaran
+Rp............
+
+Saldo Akhir
+Rp............
+```
+
+Dapat dilengkapi rincian:
+
+* Pemasukan Kas Tunai
+* Pemasukan Kas QRIS
+* Pengeluaran Kas Tunai
+* Pengeluaran Kas QRIS
+* Mutasi antar-kas
+
+Ekspor:
+
+* PDF
+* Excel
+
+---
+
+# 29. PENGATURAN SISTEM
+
+Admin dapat mengatur:
+
+### Tarif
+
+* Tarif air per m³
+* Biaya beban/admin
+
+### Profil organisasi
+
+* Nama PAMSIMAS
+* Alamat
+* Logo
+* Kontak
+
+### QRIS
+
+* Data QRIS yang digunakan
+
+### Konfigurasi sistem
+
+* Periode tagihan
+* Pengaturan dasar lainnya
+
+---
+
+# 30. PROFIL ADMIN
+
+Berisi:
+
+* Foto
+* Nama
+* Username
+* Nomor HP
+* Status akun
+
+Admin dapat mengubah informasi profil dan password.
+
+---
+
+# 31. SIKLUS BISNIS BULANAN LENGKAP
+
+Ini adalah flow paling penting untuk menggambarkan sistem secara keseluruhan:
+
+```text
+                 PERIODE BARU
+                      ↓
+              Data pelanggan aktif
+                      ↓
+              PETUGAS CATAT METER
+                      ↓
+               Input meter saat ini
+                      ↓
+             Sistem hitung pemakaian
+                      ↓
+                Tagihan terbentuk
+                      ↓
+               ADMIN CETAK KWITANSI
+                      ↓
+               Kwitansi ke petugas
+                      ↓
+              PERIODE PENAGIHAN
+                      ↓
+             Pelanggan membayar
+                 /           \
+             TUNAI           QRIS
+                \             /
+                 ↓           ↓
+                 PETUGAS INPUT
+                      ↓
+                Upload bukti
+                      ↓
+              MENUNGGU VERIFIKASI
+                      ↓
+               PETUGAS SETOR
+                      ↓
+             ADMIN VERIFIKASI
+                      ↓
+             ┌────────┴────────┐
+             │                 │
+          SESUAI           TIDAK SESUAI
+             │                 │
+             ↓                 ↓
+      LUNASKAN TRANSAKSI      TOLAK
+             │
+             ↓
+     ┌───────┴────────┐
+     ↓                ↓
+ KAS TUNAI         KAS QRIS
+     │                │
+     └───────┬────────┘
+             ↓
+     TRANSAKSI TERCATAT
+             ↓
+ ┌───────────┼──────────────┐
+ ↓           ↓              ↓
+Transparansi Pengeluaran  Laporan
+Wilayah                     Bulanan
+ ↓           ↓              ↓
+RT/Dusun     Kas berkurang  Rekap
+ ↓
+Tindak lanjut
+penagihan
+```
+
+---
+
+# 32. HUBUNGAN ANTAR MODUL
+
+| Modul                | Fungsi Utama                   | Terhubung ke                    |
+| -------------------- | ------------------------------ | ------------------------------- |
+| Data Pelanggan       | Master pelanggan               | Input Meter, Tagihan            |
+| Data Petugas         | Akun penagih                   | Penagihan, Verifikasi           |
+| Input Meter          | Mencatat penggunaan            | Tagihan                         |
+| Cetak Kwitansi       | Menyiapkan bukti fisik         | Tagihan                         |
+| Verifikasi Transaksi | Mengesahkan pembayaran/setoran | Pelanggan, Kas                  |
+| Akun Kas             | Mencatat posisi & mutasi uang  | Pemasukan, Pengeluaran, Laporan |
+| Pengeluaran          | Mencatat uang keluar           | Kas, Laporan, Publik            |
+| Transparansi Wilayah | Mengukur pembayaran            | Data Tagihan/Status Pembayaran  |
+| Laporan Bulanan      | Rekap keuangan                 | Kas, Pengeluaran, Verifikasi    |
+| Pengaturan           | Konfigurasi sistem             | Seluruh sistem                  |
+
+---
+
+# 33. PEMAHAMAN INTI SISTEM
+
+Pada akhirnya, sistem ini memiliki **tiga alur besar**:
+
+### A. Alur Operasional
+
+> **Pelanggan → Petugas → Tagihan → Pembayaran → Verifikasi**
+
+### B. Alur Keuangan
+
+> **Verifikasi → Kas Tunai/Kas QRIS → Pengeluaran/Mutasi → Laporan**
+
+### C. Alur Monitoring
+
+> **Data Pembayaran → Transparansi Wilayah → Dusun → RT → Pelanggan → Tindak Lanjut Penagihan**
+
+Ketiganya saling terhubung, tetapi fungsi masing-masing tetap jelas.
+
+**Admin mengelola seluruh siklus. Petugas menjalankan proses lapangan. Publik hanya menerima informasi yang memang layak dipublikasikan.**
+
+Dengan model ini, digitalisasi tidak memaksa PAMSIMAS meninggalkan proses lama yang masih dibutuhkan—seperti **kwitansi fisik dan pembayaran langsung kepada petugas**—melainkan menjadikan proses tersebut **tercatat, terverifikasi, dan dapat dipertanggungjawabkan secara digital**.
